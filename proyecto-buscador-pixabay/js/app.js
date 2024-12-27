@@ -53,25 +53,25 @@ function mostrarAlerta(mensaje){
 
 }
 
-function buscarImagenes(){
+async function buscarImagenes(){
 
 
     const termino = document.getElementById('termino').value;
     const key = '47029565-a47a69dc3b801225ef8d0cc52';
     const url = `https://pixabay.com/api/?key=${key}&q=${termino}&per_page=${registrosPorPagina}&page=${paginaActual}`;
-    const response = fetch(url);
-    response.
-        then(response => response.json()).
-        then(data => {
-            totalPaginas = calcularPaginas(data.totalHits)
-            mostrarImagenes(data.hits)
-        })
-}
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        totalPaginas = calcularPaginas(data.totalHits)
+        mostrarImagenes(data.hits)
+    } catch (error) {
+        console.error(error);
+    }
+}   
 
 function mostrarImagenes(imagenesJSON){
-    while(resultado.firstChild){
-        resultado.removeChild(resultado.firstChild);
-    }
+
+    limpiarHTML();
 
     imagenesJSON.forEach(imagen => {
         const {previewURL, largeImageURL, views, likes} = imagen;
@@ -103,8 +103,8 @@ function calcularPaginas(total){
     return parseInt(Math.ceil(total/registrosPorPagina));
 }
 
-function *crearPaginador(total){
-    for (let i = 1; i<=total; i++) {
+function *crearPaginador(totalPaginas){
+    for (let i = 1; i<=totalPaginas; i++) {
         yield i;
     }
 }
@@ -112,7 +112,7 @@ function *crearPaginador(total){
 function imprimirPaginador(){
     iterador = crearPaginador(totalPaginas);
     while(true){
-        const {value, done} = iterador.next();;
+        const {value, done} = iterador.next();
         if(done) return
 
         const btn = document.createElement('a');
@@ -125,5 +125,11 @@ function imprimirPaginador(){
             buscarImagenes();
         }
         paginacion.appendChild(btn)
+    }
+}
+
+function limpiarHTML(){
+    while(resultado.firstChild){
+        resultado.removeChild(resultado.firstChild);
     }
 }

@@ -58,12 +58,16 @@ function showSections(){
 
 }
 
-function getMeals(){
+async function getMeals(){
     const url = 'http://localhost:4000/platillos';
-    fetch(url)
-        .then(response => response.json())
-        .then(data => showMeals(data))
-        .catch(error => console.log(error))
+
+    try {
+        const response = await fetch(url);
+        const data = response.json();
+        showMeals(data);
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 function showMeals(platillos){

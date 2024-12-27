@@ -18,12 +18,16 @@ document.addEventListener('DOMContentLoaded', ()=> {
     currencySelectElement.addEventListener('change', addCurrencyValueToSearchObj)
 })
 
-function getCriptosFromAPI(){
+async function getCriptosFromAPI(){
     const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD';
-    fetch(url)
-    .then(response => response.json())
-    .then(data => addOptionsToCriptoSelectElement(data.Data))
-    // .then(criptomonedas => mostrarCriptomonedas(criptomonedas))
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        addOptionsToCriptoSelectElement(data.Data);
+    } catch (error) {
+        console.error(error);
+    }
 }   
 
 function addOptionsToCriptoSelectElement(criptomonedas){
@@ -70,15 +74,19 @@ function showAlert(message){
     } 
 }
 
-function getCriptoValueFromAPI(){
+async function getCriptoValueFromAPI(){
     const {currency, cripto} = searchObj;
     const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cripto}&tsyms=${currency}`
     
     showSpinner();
-
-    fetch(url)
-        .then(response => response.json())
-        .then(data => showCriptoData(data.DISPLAY[cripto][currency]));
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        showCriptoData(data.DISPLAY[cripto][currency])
+    } catch (error) {
+        console.error(error)
+    }
 
 }
 
